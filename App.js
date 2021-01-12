@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 //import axios from 'axios';
 import api from './src/services/api';
+import axios from 'axios';
 import { Image, View, Text, TextInput, ActivityIndicator, FlatList, Alert, StyleSheet, TouchableOpacity, StatusBar } from 'react-native'
 
 
@@ -26,21 +27,18 @@ export default class App extends Component {
   loadProduct = async (parametro) => {
     
     if(parametro.length <= 1){
-      fetch(`http://192.168.43.53:8085/computador`)
-      .then((response) => response.json())
-      .then((json) => {
-        this.setState({ data: json.produtos });
-        
-      })
-      .catch((error) => console.error(error))
-      .finally(() => {
-        this.setState({ isLoading: false });
-      });
+     const res= await api.get(`/computador`)
+      
+      console.log(" Principal =>",res.data.produtos)
+      this.setState({ isLoading: false });
+      this.setState({ data: res.data.produtos });
+
     }else{
       fetch(`http://192.168.43.53:8085/${this.state.parametro}`)
-      .then((response) => response.json())
+      .then((response) => console.log("prommmkmknk",response.json()))
       .then((json) => {
-        this.setState({ data: json.produtos });
+        
+        this.setState({ data: json });
       })
       .catch((error) => console.error(error))
       .finally(() => {
@@ -54,6 +52,7 @@ export default class App extends Component {
   render() {
 
     const { data, isLoading } = this.state;
+    console.log(data)
 
     return (
       <View style={styles.container}>
@@ -104,44 +103,18 @@ export default class App extends Component {
             <FlatList
               contentContainerStyle={styles.list}
               data={data}
-              keyExtractor={({ id }, index) => id}
+             keyExtractor={data.id}
+
               renderItem={({ item }) => (
 
                 <View style={styles.box}>
 
-                  <View style={styles.productContainer}>
-
-                    <View style={styles.containerImg}>
-
-                      <Image source={require('./src/Img/TOYOTA.png')} style={styles.img}
-                      />
-
-                    </View>
-
-                    <View style={styles.containerProduct}>
-
-                      <Text style={styles.productTitle}>{item.nome} </Text>
-                      <Text style={styles.productMarca}>{item.marca}</Text>
-                      <Text style={styles.productMarca}>{item.preco}</Text>
-
-                    </View>
-
-                  </View>
-
-                  <View>
-
-                    <TouchableOpacity style={styles.productButton} onPress={() => { }}>
-
-                      <Text style={styles.productButtonText}>Acessar</Text>
-
-                    </TouchableOpacity>
-
-                  </View>
-
+                  <Text>{item.name}</Text>
                 </View>
 
               )}
-            />)}
+            />
+            )}
       </View>
     );
   }
